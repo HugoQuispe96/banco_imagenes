@@ -14,7 +14,7 @@ app.use(cors());
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')))
+api.use(express.static(path.join(__dirname, 'public')))
 
 //Redirect
 api.use(function (req, res, next) {
