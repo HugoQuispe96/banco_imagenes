@@ -6,17 +6,18 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 const app = express();
 const http = require('http');
+const cors = require('cors');
+const api = express.Router();
 
 //Middlewares
+app.use(cors());
 app.use(morgan('tiny'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')))
 
-//Declaración de rutas
-const indexRouter = require("./routes/index");
 //Redirect
-app.use(function (req, res, next) {
+api.use(function (req, res, next) {
   if ((!req.secure) && (req.get('X-Forwarded-Proto') !== 'https') && (process.env.NODE_ENV == "Production")) {
     res.redirect(307, 'https://' + req.get('host') + req.url);
   } else {
@@ -24,9 +25,12 @@ app.use(function (req, res, next) {
   }
 });
 
-//Rutas
-app.use("/", indexRouter);
+//Declaración de rutas
+const indexRouter = require("./routes/index");
 
+//Rutas
+api.use("/", indexRouter);
+app.use(process.env.PREFIJO, api);
 //Rutas desconocidas
 app.use(function (req, res, next) {
   next(createError(404));
